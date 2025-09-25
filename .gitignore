@@ -2,3 +2,7 @@
 /db
 /.idea
 /composer.phar
+
+/*.zip
+
+/*_deploy

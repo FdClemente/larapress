@@ -142,6 +142,63 @@ class Please
 
         $this->info("Composer install completed successfully");
     }
+
+    public function runDeployCommand(): void
+    {
+        $config = $this->loadConfig();
+        $slug = $config['slug'];
+        $zipFile = __DIR__ . "/{$slug}.zip";
+
+        $this->info("Creating deployment zip for plugin '{$slug}'...");
+
+        $tmpDir = __DIR__ . "/{$slug}_deploy";
+        if (is_dir($tmpDir)) {
+            exec("rm -rf " . escapeshellarg($tmpDir));
+        }
+        mkdir($tmpDir, 0755, true);
+
+        $paths = ['App', 'bootstrap', 'config', 'helpers', 'resources', "{$slug}.php"];
+        foreach ($paths as $p) {
+            $source = __DIR__ . '/' . $p;
+            $dest = $tmpDir . '/' . $p;
+
+            if (is_dir($source)) {
+                exec("cp -r " . escapeshellarg($source) . " " . escapeshellarg($dest));
+            } elseif (is_file($source)) {
+                $destDir = dirname($dest);
+                if (!is_dir($destDir)) {
+                    mkdir($destDir, 0755, true);
+                }
+                copy($source, $dest);
+            }
+        }
+
+        $zip = new ZipArchive();
+        if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            $this->error("Cannot create zip file {$zipFile}");
+            exit(-100);
+        }
+
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($tmpDir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($files as $file) {
+            $filePath = $file->getRealPath();
+            $relativePath = substr($filePath, strlen($tmpDir) + 1);
+            if ($file->isDir()) {
+                $zip->addEmptyDir($relativePath);
+            } else {
+                $zip->addFile($filePath, $relativePath);
+            }
+        }
+
+        $zip->close();
+        exec("rm -rf " . escapeshellarg($tmpDir));
+
+        $this->info("Deployment zip created: {$zipFile}");
+    }
 }
 
 $please = new Please();
