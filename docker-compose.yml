@@ -1,0 +1,23 @@
+services:
+  wordpress:
+    image: wordpress:latest
+    platform: linux/amd64
+    ports:
+      - 80:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wp
+      WORDPRESS_DB_PASSWORD: admin
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - ./wp:/var/www/html/
+      - ./:/var/www/html/framework/
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wp
+      MYSQL_PASSWORD: admin
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - ./db:/var/lib/mysql
