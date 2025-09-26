@@ -5,4 +5,5 @@ return [
     'views' => __DIR__ . '/views',
     'slug' => 'larapress',
     'resources_url' => plugin_dir_url( $plugin_base_file ) . 'resources',
+    'version' => '1.0.0',
 ];

@@ -12,6 +12,7 @@ services:
     volumes:
       - ./wp:/var/www/html/
       - ./:/var/www/html/framework/
+      - ./../larapress_core:/var/www/html/core/
   db:
     image: mariadb:latest
     environment:
