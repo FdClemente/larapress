@@ -6,4 +6,9 @@ return [
     'slug' => 'larapress',
     'resources_url' => plugin_dir_url( $plugin_base_file ) . 'resources',
     'version' => '1.0.0',
+
+    'name' => 'My Plugin',
+    'description' => 'A plugin built with the Larapress framework',
+    'author' => 'Your Name',
+    'author_uri' => 'https://yoursite.com'
 ];
